@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Manager & Memories - ARS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="background: #f7fafc;">
+
+    <!-- NAVBAR -->
+    <header class="navbar" style="border-bottom: 1px solid #edf0f4;">
+        <div class="logo">
+            🌍 ARS<span>Tracker</span>
+        </div>
+        <nav>
+            <a href="index.HTML" style="color: #08a88a; font-size: 16px;">⬅ Back to Home</a>
+        </nav>
+        <div class="nav-actions">
+            <button class="nav-icon-btn" id="darkModeBtn" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+        </div>
+    </header>
+
+    <div style="padding: 40px 0;">
+        <!-- EXPENSE TRACKER SECTION -->
+        <section class="info-section" id="expenses">
+            <div class="section-title">
+                <p>💸 BUDGET MANAGER</p>
+                <h2>Trip Expense Tracker</h2>
+                <span>Log your daily expenses and track your budget in real time.</span>
+            </div>
+            <div class="expense-card">
+                <div class="expense-form">
+                    <input type="text" id="expenseTitle" placeholder="Item / Activity (e.g. Dinner, Taxi)">
+                    <input type="number" id="expenseAmount" placeholder="Amount (₹)">
+                    <select id="expenseCategory">
+                        <option value="Food">Food 🍔</option>
+                        <option value="Hotel">Hotel 🏨</option>
+                        <option value="Travel">Travel 🚖</option>
+                        <option value="Shopping">Shopping 🛍️</option>
+                        <option value="Other">Other 🎟️</option>
+                    </select>
+                    <button onclick="addExpense()">+ Add Expense</button>
+                </div>
+                
+                <div class="expense-summary">
+                    <div class="exp-summary-box">
+                        <span>Total Spent</span>
+                        <h3 id="totalSpentText">₹0</h3>
+                    </div>
+                    <div class="exp-summary-box">
+                        <span>Logged Items</span>
+                        <h3 id="totalItemsText">0</h3>
+                    </div>
+                </div>
+                <div class="expense-chart" id="expenseChart" aria-label="Expenses by category"></div>
+
+                <div class="expense-list" id="expenseList">
+                    <p style="text-align:center; color:#78818c; padding:15px;">No expenses logged yet.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHOTO GALLERY & TRIP MEMORIES -->
+        <section class="places-section" id="memories" style="margin-top: 40px;">
+            <div class="section-title">
+                <p>📸 TRIP MEMORIES</p>
+                <h2>Photo Gallery</h2>
+                <span>Upload and save your favorite trip moments.</span>
+            </div>
+            <div class="memories-container">
+                <div class="upload-box">
+                    <input type="file" id="photoUpload" accept="image/*" onchange="uploadPhoto(event)" style="display:none;">
+                    <button onclick="document.getElementById('photoUpload').click()">➕ Upload New Photo</button>
+                    <input type="text" id="photoCaption" placeholder="Add a caption (e.g. Sunset at Goa)">
+                </div>
+                <div class="gallery-grid" id="galleryGrid">
+                    <!-- Gallery items will appear here -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p class="copyright">© 2026 ARS Tourist Guide. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

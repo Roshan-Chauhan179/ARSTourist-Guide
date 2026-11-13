@@ -1,0 +1,10 @@
+{
+  "name": "ARS Tourist Guide",
+  "short_name": "ARS Travel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#08a88a",
+  "description": "Plan and explore your trips with ARS Tourist Guide.",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

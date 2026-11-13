@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARS - Smart Travel Planner</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body>
+
+    <!-- FLOATING SIDEBAR BUTTON -->
+    <a href="tracker.html" class="floating-tracker-btn" title="Open Budget & Memories">
+        <span class="icon">💼</span>
+        <span class="text">Tracker</span>
+    </a>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <a class="logo" href="#home" aria-label="ARS Tourist Guide home"><span class="logo-mark">🌍</span> ARS<span>Tourist Guide</span></a>
+        <nav class="nav-menu" aria-label="Primary navigation">
+            <a href="#home">Home</a>
+            <a href="#explore">Discover</a>
+            <a href="#planner">Trip Planner</a>
+            <a href="hotel.html">Hotels</a>
+            <a href="packages.html">Packages</a>
+            <a href="live.html?type=transport">Live Travel</a>
+            <a href="tracker.html">Trip Tools</a>
+        </nav>
+        <div class="nav-actions">
+            <div class="language-picker" aria-label="Choose website language">
+                <span class="language-icon" aria-hidden="true">🌐</span>
+                <select id="languageSelect" class="language-select" aria-label="Choose website language" onchange="changeSiteLanguage(this.value)">
+                    <option value="">Language</option>
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="gu">Gujarati</option>
+                    <option value="mr">Marathi</option>
+                    <option value="bn">Bengali</option>
+                    <option value="te">Telugu</option>
+                    <option value="ta">Tamil</option>
+                    <option value="kn">Kannada</option>
+                    <option value="ml">Malayalam</option>
+                    <option value="pa">Punjabi</option>
+                </select>
+                <div id="google_translate_element" aria-hidden="true"></div>
+            </div>
+            <button class="nav-icon-btn" id="darkModeBtn" onclick="toggleDarkMode()" title="Switch theme" aria-label="Switch theme">☾</button>
+            <button class="nav-icon-btn" onclick="openProfile()" title="My account" aria-label="My account">◉</button>
+            <button class="nav-icon-btn" onclick="openSavedPlans()" title="Saved plans" aria-label="Saved plans">♡</button>
+            <button class="nav-btn" onclick="scrollToPlanner()">Plan a trip <span>→</span></button>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <p class="tag">✨ Your AI Travel Companion</p>
+            <h1>Explore the World <span>Smarter</span></h1>
+            <p class="hero-text">Weather, hotels, food, expense tracker, photos, and complete trip planning — all in one place with AI.</p>
+            <div class="search-box">
+                <input type="text" id="destination" placeholder="Search destinations, hotels, packages, or tools…" autocomplete="off">
+                <button id="voiceSearchButton" class="voice-search-btn" type="button" onclick="startVoiceSearch()" title="Search by voice">🎙️ <span>Voice</span></button>
+                <button id="exploreDestinationButton" type="button" onclick="runSiteSearch()">Explore →</button>
+            </div>
+            <div class="site-search-results" id="siteSearchResults" role="listbox" aria-label="Website features" hidden></div>
+            <div class="site-search-help" id="siteSearchHelp" aria-live="polite">Search the whole website, or say a destination with Voice.</div>
+            <div class="popular">
+                <span>Popular:</span>
+                <button onclick="setDestination('Goa')">Goa</button>
+                <button onclick="setDestination('Manali')">Manali</button>
+                <button onclick="setDestination('Kashmir')">Kashmir</button>
+                <button onclick="setDestination('Jaipur')">Jaipur</button>
+            </div>
+            <div class="hero-share">
+                <button class="share-btn" onclick="shareWebsite()">🔗 Share ARS Tourist Guide</button>
+            </div>
+        </div>
+        <div class="hero-travellers" aria-hidden="true">
+            <div class="travel-orbit orbit-one"></div><div class="travel-orbit orbit-two"></div>
+            <div class="traveller-card traveller-one"><span class="traveller-face">🧑🏽‍💼</span><i class="traveller-bag">✦</i></div>
+            <div class="traveller-card traveller-two"><span class="traveller-face">🧑🏻‍💻</span><i class="traveller-bag">✦</i></div>
+            <div class="travel-ticket">NEXT STOP<br><b>Anywhere</b></div>
+        </div>
+    </section>
+
+    <section class="discovery-section" id="explore">
+        <div class="section-title"><p>🌐 GLOBAL DISCOVERY</p><h2>Find the right international trip</h2><span>Search any country, city, hotel, or activity. Filters shape your next plan.</span></div>
+        <div class="discovery-panel">
+            <div class="filter-row">
+                <label>Continent<select id="continentFilter"><option value="">All continents</option><option>Asia</option><option>Europe</option><option>Africa</option><option>North America</option><option>Australia</option></select></label>
+                <label>Visa<select id="visaFilter"><option value="">Any visa</option><option>Visa Free</option><option>Visa on Arrival</option><option>E-Visa</option><option>Visa Required</option></select></label>
+                <label>Travel style<select id="travellerTypeFilter"><option value="">Any traveller</option><option>Honeymoon</option><option>Solo</option><option>Family</option><option>LGBTQ+ Friendly</option></select></label>
+                <label>Month<input id="monthFilter" type="month"></label>
+            </div>
+            <div class="filter-row needs-row">
+                <label>Budget / person <input id="discoveryBudget" type="range" min="20000" max="500000" value="100000" step="5000" oninput="updateBudgetLabel(this.value)"><b id="budgetLabel">₹1,00,000</b></label>
+                <label>Days<input id="durationFilter" type="number" min="1" max="30" value="5"></label>
+                <label><input type="checkbox" value="Jain food" class="needFilter"> Jain food</label>
+                <label><input type="checkbox" value="Halal food" class="needFilter"> Halal food</label>
+                <label><input type="checkbox" value="Wheelchair friendly" class="needFilter"> Wheelchair-friendly</label>
+                <button type="button" class="filter-submit" onclick="applyDiscoveryFilters()">Show matches</button>
+            </div>
+            <p id="discoveryResult" class="discovery-result">Try “Dubai”, then add your budget and travel preferences.</p>
+        </div>
+    </section>
+
+    <section class="international-showcase" aria-label="International destinations">
+        <div class="section-title"><p>✈ INTERNATIONAL INSPIRATION</p><h2>See the world, one trip at a time</h2><span>Choose a destination photo to start planning.</span></div>
+        <div class="country-photo-grid">
+            <button class="country-photo-card" type="button" onclick="setDestination('Dubai')"><img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=900&q=85" alt="Dubai skyline at sunset" loading="lazy"><span><b>Dubai</b><small>UAE · City & desert</small></span></button>
+            <button class="country-photo-card" type="button" onclick="setDestination('Paris')"><img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=900&q=85" alt="Paris and Eiffel Tower" loading="lazy"><span><b>Paris</b><small>France · Culture & romance</small></span></button>
+            <button class="country-photo-card" type="button" onclick="setDestination('Bali')"><img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=85" alt="Bali tropical landscape" loading="lazy"><span><b>Bali</b><small>Indonesia · Beach & nature</small></span></button>
+            <button class="country-photo-card" type="button" onclick="setDestination('Tokyo')"><img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=900&q=85" alt="Tokyo city lights" loading="lazy"><span><b>Tokyo</b><small>Japan · Food & city life</small></span></button>
+            <button class="country-photo-card" type="button" onclick="setDestination('Istanbul')"><img src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=900&q=85" alt="Istanbul city and mosque" loading="lazy"><span><b>Istanbul</b><small>Türkiye · History & food</small></span></button>
+            <button class="country-photo-card" type="button" onclick="setDestination('Zurich')"><img src="https://images.unsplash.com/photo-1527668752968-14dc70a27c95?auto=format&fit=crop&w=900&q=85" alt="Swiss Alps near Zurich" loading="lazy"><span><b>Switzerland</b><small>Europe · Mountains & lakes</small></span></button>
+        </div>
+    </section>
+
+    <!-- AI PLANNER -->
+    <section class="planner" id="planner">
+        <div class="section-title">
+            <p>🤖 AI TRAVEL PLANNER</p>
+            <h2>Let AI Plan Your Perfect Trip</h2>
+            <span>Tell us your destination and AI will create a smart travel plan.</span>
+        </div>
+        <div class="planner-card">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>📍 Destination</label>
+                    <input type="text" id="placeInput" placeholder="e.g. Goa">
+                </div>
+                <div class="input-group">
+                    <label>📅 Number of Days</label>
+                    <input type="number" id="days" placeholder="e.g. 5" min="1" max="365" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                <div class="input-group">
+                    <label>🗓️ Start date</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="input-group">
+                    <label>🗓️ End date</label>
+                    <input type="date" id="endDate">
+                </div>
+                <div class="input-group">
+                    <label>👨‍👩‍👧 Travellers</label>
+                    <input type="number" id="travellers" placeholder="e.g. 8" min="1" step="1" required>
+                </div>
+                <div class="input-group">
+                    <label>💰 Total group budget (₹)</label>
+                    <input type="number" id="budget" placeholder="Total group budget, e.g. 5000000" min="1">
+                </div>
+                <div class="input-group">
+                    <label>📍 Starting city</label>
+                    <input type="text" id="startCity" placeholder="e.g. Delhi">
+                </div>
+                <div class="input-group">
+                    <label>🛣️ Add stop cities</label>
+                    <input type="text" id="viaCities" placeholder="e.g. Chandigarh, Kullu">
+                </div>
+                <div class="input-group">
+                    <label>🚆 Transport</label>
+                    <select id="transportType"><option value="any">Best option</option><option value="flight">Flight</option><option value="train">Train</option><option value="bus">Bus</option><option value="car">Car / cab</option></select>
+                </div>
+                <div class="input-group">
+                    <label>🏨 Hotel class</label>
+                    <select id="hotelClass"><option value="budget">Budget</option><option value="mid-range" selected>Mid-range</option><option value="premium">Premium</option></select>
+                </div>
+                <div class="input-group">
+                    <label>❤️ Interests</label>
+                    <input type="text" id="interests" placeholder="e.g. food, nature, history">
+                </div>
+            </div>
+            <button class="generate-btn" onclick="generateAIPlan()">🚀 Create My Trip Plan</button>
+        </div>
+    </section>
+
+    <section class="trip-tools-section" id="tripTools">
+        <div class="section-title"><p>🧳 TRIP TOOLS</p><h2>Stay ready for your journey</h2><span>Your countdown and document checklist are saved on this device.</span></div>
+        <div class="trip-tools-grid">
+            <article class="trip-tool-card"><span>⏳ TRIP COUNTDOWN</span><h3>How many days to go?</h3><input id="countdownDate" type="date"><p id="countdownMessage">Choose your departure date to start the countdown.</p></article>
+            <article class="trip-tool-card"><span>🪪 DOCUMENTS</span><h3>Travel document checklist</h3><label><input type="checkbox" data-trip-doc="Government ID"> Government ID</label><label><input type="checkbox" data-trip-doc="Tickets"> Flight / train / bus ticket</label><label><input type="checkbox" data-trip-doc="Hotel booking"> Hotel booking</label><label><input type="checkbox" data-trip-doc="Emergency contact"> Emergency contact</label></article>
+            <article class="trip-tool-card"><span>♥ WISHLIST</span><h3>Saved travel picks</h3><p id="wishlistSummary">No saved places yet.</p><a class="action-btn map" href="wishlist.html">Open wishlist →</a></article>
+            <article class="trip-tool-card"><span>💱 CURRENCY</span><h3>World currency → Indian Rupees</h3><p class="currency-api-status">✓ Free live rates · no API key needed</p><label class="currency-amount-label" for="currencyAmount">Amount to convert</label><input id="currencyAmount" type="number" min="0.01" step="any" inputmode="decimal" placeholder="e.g. 100" aria-label="Amount to convert"><select id="currencySource" aria-label="Currency to convert from"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="AED">AED — UAE Dirham</option><option value="SAR">SAR — Saudi Riyal</option><option value="QAR">QAR — Qatari Riyal</option><option value="KWD">KWD — Kuwaiti Dinar</option><option value="OMR">OMR — Omani Rial</option><option value="BHD">BHD — Bahraini Dinar</option><option value="CAD">CAD — Canadian Dollar</option><option value="AUD">AUD — Australian Dollar</option><option value="NZD">NZD — New Zealand Dollar</option><option value="SGD">SGD — Singapore Dollar</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="KRW">KRW — South Korean Won</option><option value="THB">THB — Thai Baht</option><option value="MYR">MYR — Malaysian Ringgit</option><option value="IDR">IDR — Indonesian Rupiah</option><option value="CHF">CHF — Swiss Franc</option><option value="SEK">SEK — Swedish Krona</option><option value="NOK">NOK — Norwegian Krone</option><option value="DKK">DKK — Danish Krone</option><option value="ZAR">ZAR — South African Rand</option><option value="BRL">BRL — Brazilian Real</option><option value="MXN">MXN — Mexican Peso</option><option value="TRY">TRY — Turkish Lira</option><option value="INR">INR — Indian Rupee</option></select><div class="currency-target" aria-label="Converting to Indian Rupees">→ ₹ INR — Indian Rupee</div><button class="action-btn map" onclick="convertCurrency()">Convert to ₹</button><p id="currencyResult">Enter an amount, choose a currency, and convert.</p><small class="currency-attribution">Rates by <a href="https://www.exchangerate-api.com" target="_blank" rel="noreferrer">ExchangeRate-API</a> · updated daily</small></article>
+            <article class="trip-tool-card"><span>🌿 ECO TRAVEL</span><h3>Carbon footprint</h3><input id="carbonDistance" type="number" min="1" placeholder="Distance in km"><select id="carbonTransport"><option value="flight">Flight</option><option value="car">Car / cab</option><option value="bus">Bus</option><option value="train">Train</option></select><button class="action-btn map" onclick="calculateCarbon()">Calculate CO₂</button><p id="carbonResult">Compare transport impact before booking.</p></article>
+            <article class="trip-tool-card"><span>🆘 SAFETY</span><h3>Emergency SOS</h3><p>Share your live location with saved emergency contacts, or call 112 for urgent help.</p><a class="action-btn emergency-call" href="sos.html">Open SOS →</a></article>
+            <article class="trip-tool-card"><span>📷 COMMUNITY</span><h3>Reviews & travel photos</h3><p>Share trip experiences, ratings, and photos.</p><a class="action-btn map" href="reviews.html">Write a review →</a></article>
+            <article class="trip-tool-card"><span>🧭 EXPLORE</span><h3>Camera landmark guide</h3><p>Open a mobile camera view with nearby landmark guidance.</p><a class="action-btn map" href="ar.html">Open camera guide →</a></article>
+            <article class="trip-tool-card"><span>🔊 AUDIO GUIDE</span><h3>Listen to your itinerary</h3><p>Generate a trip plan, then play it hands-free while travelling.</p><button id="audioGuideButton" class="action-btn map" type="button" onclick="playAudioGuide()">▶ Play audio guide</button><p id="audioGuideStatus" class="audio-guide-status" aria-live="polite">Ready after you generate a trip plan.</p></article>
+        </div>
+    </section>
+
+    <!-- AI RESULT -->
+    <section class="result-section" id="result">
+        <div id="resultContent">
+            <div class="empty-result">
+                <div>🧳</div>
+                <h3>Your personalized trip plan will appear here</h3>
+                <p>Enter your destination above and let ARS Tourist Guide create your travel plan.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="explore">
+        <div class="section-title">
+            <p>EVERYTHING YOU NEED</p>
+            <h2>Your Complete Travel Assistant</h2>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card target-weather-card" onclick="openLivePage('weather')" style="cursor: pointer;">
+                <div class="feature-icon weather">🌤️</div>
+                <h3>Live Weather</h3>
+                <p>Check current weather and find the best time to visit your destination.</p>
+            </div>
+            <div class="feature-card target-place-card" onclick="openLivePage('places')" style="cursor: pointer;">
+                <div class="feature-icon place">📍</div>
+                <h3>Best Places</h3>
+                <p>Discover famous attractions and hidden gems near your destination.</p>
+            </div>
+            <div class="feature-card target-hotel-card" onclick="openHotelFinder()" style="cursor: pointer;">
+                <div class="feature-icon hotel">🏨</div>
+                <h3>Hotels</h3>
+                <p>Browse stays with photos, map links and a dedicated hotel page.</p>
+            </div>
+            <div class="feature-card target-food-card" onclick="openLivePage('food')" style="cursor: pointer;">
+                <div class="feature-icon food">🍛</div>
+                <h3>Local Food</h3>
+                <p>Discover the best restaurants and local food around you.</p>
+            </div>
+            <div class="feature-card" onclick="openLivePage('map')" style="cursor: pointer;">
+                <div class="feature-icon">🗺️</div>
+                <h3>Smart Maps</h3>
+                <p>Open an easy live route for your selected destination.</p>
+            </div>
+            <div class="feature-card" onclick="openTransportFinder()" style="cursor: pointer;">
+                <div class="feature-icon train">🚆</div>
+                <h3>Transport & Routes</h3>
+                <p>Compare live flight, train and bus options for your destination.</p>
+            </div>
+            <div class="feature-card" onclick="openLivePage('emergency')" style="cursor: pointer;">
+                <div class="feature-icon emergency">🆘</div>
+                <h3>Emergency Help</h3>
+                <p>Find nearby hospitals and police help for your destination.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- STAY DISCOVERY -->
+    <section class="hotel-showcase" id="stays">
+        <div class="section-title">
+            <p>🏨 STAY YOUR WAY</p>
+            <h2>Find a stay that fits your trip</h2>
+            <span>Choose a style, then see live stays for your selected destination.</span>
+        </div>
+        <div class="stay-style-grid">
+            <article class="stay-style-card" onclick="openHotelFinder()" tabindex="0" role="button" onkeydown="if(event.key==='Enter') openHotelFinder()">
+                <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1000&q=85" alt="Premium hotel exterior" loading="lazy">
+                <div><span>PREMIUM</span><h3>Luxury stays</h3><p>Resorts, comfort and memorable views.</p><button type="button">Explore stays →</button></div>
+            </article>
+            <article class="stay-style-card" onclick="openHotelFinder()" tabindex="0" role="button" onkeydown="if(event.key==='Enter') openHotelFinder()">
+                <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1000&q=85" alt="Boutique hotel room" loading="lazy">
+                <div><span>BOUTIQUE</span><h3>Local character</h3><p>Stylish stays near the action.</p><button type="button">Explore stays →</button></div>
+            </article>
+            <article class="stay-style-card" onclick="openHotelFinder()" tabindex="0" role="button" onkeydown="if(event.key==='Enter') openHotelFinder()">
+                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=85" alt="Comfortable budget hotel" loading="lazy">
+                <div><span>VALUE</span><h3>Budget-friendly</h3><p>Comfortable stays for smart travel.</p><button type="button">Explore stays →</button></div>
+            </article>
+        </div>
+    </section>
+
+    <!-- WEATHER SECTION -->
+    <section class="info-section" id="weatherSection">
+        <div class="section-title">
+            <p>🌤️ WEATHER</p>
+            <h2>Know Before You Go</h2>
+        </div>
+        <div class="weather-card" id="weatherCard" aria-live="polite">
+            <div class="weather-main">
+                <div class="weather-icon" id="weatherIcon">☀️</div>
+                <div>
+                    <h2 id="weatherTemperature">Search a destination</h2>
+                    <p id="weatherCondition">Live weather will appear here</p>
+                </div>
+            </div>
+            <div class="weather-details">
+                <div><span>💧 Humidity</span><strong id="weatherHumidity">—</strong></div>
+                <div><span>💨 Wind</span><strong id="weatherWind">—</strong></div>
+                <div><span>🌧️ Rain</span><strong id="weatherRain">—</strong></div>
+                <div><span>🌅 Sunrise</span><strong id="weatherSunrise">—</strong></div>
+            </div>
+            <div class="weather-tip" id="weatherTip">
+                💡 <strong>AI Tip:</strong> Today is a good day for outdoor sightseeing.
+            </div>
+        </div>
+    </section>
+
+    <!-- PLACES -->
+    <section class="places-section">
+        <div class="section-title">
+            <p>📍 EXPLORE</p>
+            <h2>Popular Places</h2>
+        </div>
+        <div class="place-grid" id="livePlacesGrid">
+            <article class="place-card destination-card" onclick="openDestinationDetail('Manali')" tabindex="0" role="link" onkeydown="if(event.key==='Enter') openDestinationDetail('Manali')">
+                <div class="place-image manali">
+                    <img src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80" alt="Manali">
+                </div>
+                <div class="place-content">
+                    <span>Himachal Pradesh</span>
+                    <h3>Manali</h3>
+                    <p>Mountains, snow and adventure.</p>
+                    <div class="place-bottom"><span>⭐ 4.8</span><span>₹₹</span></div>
+                    <button class="card-link">Explore guide →</button>
+                </div>
+            </article>
+            <article class="place-card destination-card" onclick="openDestinationDetail('Goa')" tabindex="0" role="link" onkeydown="if(event.key==='Enter') openDestinationDetail('Goa')">
+                <div class="place-image goa">
+                    <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80" alt="Goa">
+                </div>
+                <div class="place-content">
+                    <span>Goa, India</span>
+                    <h3>Goa</h3>
+                    <p>Beaches, sunsets and nightlife.</p>
+                    <div class="place-bottom"><span>⭐ 4.7</span><span>₹₹</span></div>
+                    <button class="card-link">Explore guide →</button>
+                </div>
+            </article>
+            <article class="place-card destination-card" onclick="openDestinationDetail('Kashmir')" tabindex="0" role="link" onkeydown="if(event.key==='Enter') openDestinationDetail('Kashmir')">
+                <div class="place-image kashmir">
+                    <img src="https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=800&q=80" alt="Kashmir">
+                </div>
+                <div class="place-content">
+                    <span>Jammu & Kashmir</span>
+                    <h3>Kashmir</h3>
+                    <p>Paradise, lakes and mountains.</p>
+                    <div class="place-bottom"><span>⭐ 4.9</span><span>₹₹</span></div>
+                    <button class="card-link">Explore guide →</button>
+                </div>
+            </article>
+            <article class="place-card destination-card" onclick="openDestinationDetail('Jaipur')" tabindex="0" role="link" onkeydown="if(event.key==='Enter') openDestinationDetail('Jaipur')">
+                <div class="place-image jaipur">
+                    <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80" alt="Jaipur">
+                </div>
+                <div class="place-content">
+                    <span>Rajasthan</span>
+                    <h3>Jaipur</h3>
+                    <p>Forts, culture and royal history.</p>
+                    <div class="place-bottom"><span>⭐ 4.6</span><span>₹</span></div>
+                    <button class="card-link">Explore guide →</button>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- FOOD SECTION -->
+    <section class="food-section" id="food">
+        <div class="section-title">
+            <p>🍛 LOCAL FOOD</p>
+            <h2 id="foodHeading">Best Food Near You</h2>
+            <span>Choose a destination to see real nearby restaurants, cafés and map listings.</span>
+        </div>
+        <div class="food-grid" id="liveFoodGrid">
+            <article class="food-card" onclick="openLivePage('food')" style="cursor:pointer">
+                <div class="food-image"><img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=900&q=85" alt="Indian local speciality" loading="lazy"></div>
+                <span class="food-type">LOCAL SPECIALITY</span>
+                <h3>Discover local flavours</h3>
+                <p>Search real local dishes and restaurants near your destination.</p>
+                <button class="card-link">Find local food →</button>
+            </article>
+            <article class="food-card" onclick="openLivePage('food')" style="cursor:pointer">
+                <div class="food-image"><img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=900&q=85" alt="Popular café coffee and food" loading="lazy"></div>
+                <span class="food-type">CAFÉS</span>
+                <h3>Cafés & quick bites</h3>
+                <p>Find cafés, snacks and beverages from nearby live listings.</p>
+                <button class="card-link">Find cafés →</button>
+            </article>
+            <article class="food-card" onclick="openLivePage('food')" style="cursor:pointer">
+                <div class="food-image"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=85" alt="Family restaurant dining" loading="lazy"></div>
+                <span class="food-type">RESTAURANTS</span>
+                <h3>Family dining</h3>
+                <p>Explore restaurants and check their current menu in Maps.</p>
+                <button class="card-link">Find restaurants →</button>
+            </article>
+        </div>
+        <div class="food-live-cta"><button class="generate-btn" type="button" onclick="openLivePage('food')">🍽️ Open live food finder</button></div>
+    </section>
+
+    <!-- CHATBOT -->
+    <div class="chatbot">
+        <button class="chat-button" onclick="toggleChat()" aria-label="Open travel assistant">✦</button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div>
+                    <strong>Travel Assistant</strong>
+                    <small id="chatStatus">● Ready to help</small>
+                </div>
+                <button onclick="toggleChat()" aria-label="Close travel assistant">×</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="bot-message">
+                    👋 Hi! I can help you plan your trip, compare stays, and make a packing list.
+                </div>
+            </div>
+            <div class="chat-suggestions" aria-label="Travel questions">
+                <button type="button" onclick="askTravelAssistant('Make a 3-day trip plan')">3-day plan</button>
+                <button type="button" onclick="askTravelAssistant('What should I pack?')">Packing list</button>
+                <button type="button" onclick="askTravelAssistant('Suggest a budget stay')">Budget stay</button>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Ask about your trip…" maxlength="1000" onkeydown="handleChat(event)">
+                <button onclick="sendMessage()" aria-label="Send message">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEEDBACK WIDGET -->
+    <div class="feedback-widget"><a class="feedback-button" href="reviews.html">💬 Reviews &amp; Feedback</a></div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-logo">
+            🌍 ARS<span>Tourist Guide</span>
+        </div>
+        <p>Your intelligent AI-powered travel companion.</p>
+        
+        <div class="footer-helpline" style="margin: 15px 0; color: #d8ebe8; font-size: 14px;">
+            <p><strong>📞 Website Helpline:</strong> 7705033575, 9140611897</p>
+        </div>
+
+        <div class="footer-links">
+            <a href="#home">Home</a>
+            <a href="#explore">Explore</a>
+            <a href="#planner">AI Planner</a>
+            <a href="#explore">Hotels</a>
+        </div>
+        <p class="copyright">© 2026 ARS Tourist Guide. All rights reserved.</p>
+    </footer>
+
+    <!-- LOGIN BUTTON & MODALS (Kept Same) -->
+    <div class="auth-widget">
+        <button class="auth-button" id="authButton" onclick="handleAuthButton()">
+            👤 Login / Sign Up
+        </button>
+    </div>
+
+    <div class="auth-overlay" id="profileOverlay">
+        <div class="auth-modal profile-modal">
+            <button class="auth-close" onclick="closeProfile()">×</button>
+            <div class="auth-header"><div class="auth-logo">🧳</div><h2>My travel profile</h2><p>Save up to five people and their document details securely in your account.</p></div>
+            <div class="profile-tabs"><button class="auth-tab active" data-profile-tab="travellers" onclick="showProfileTab('travellers')">Family / Group</button><button class="auth-tab" data-profile-tab="documents" onclick="showProfileTab('documents')">Document Wallet</button><button class="auth-tab" data-profile-tab="history" onclick="showProfileTab('history')">Activity History</button></div>
+            <section id="travellersPanel"><form class="compact-form" onsubmit="saveTraveller(event)"><input id="travellerName" required placeholder="Full name"><select id="travellerType"><option value="adult">Adult</option><option value="child">Child</option><option value="infant">Infant</option></select><input id="travellerDob" type="date" aria-label="Date of birth"><input id="travellerPassport" placeholder="Passport no. (optional)"><input id="travellerNationality" placeholder="Nationality"><input id="travellerRelationship" placeholder="Relationship"><button class="auth-submit" type="submit">Save traveller</button></form><div id="travellerList" class="profile-list"></div></section>
+            <section id="documentsPanel" hidden><p class="privacy-note">For safety, only document numbers and expiry dates are saved. Passport scans/KYC auto-fetch require a verified provider and are not simulated.</p><form class="compact-form" onsubmit="saveDocument(event)"><select id="documentTraveller"><option value="">Account holder</option></select><select id="documentType"><option>Passport</option><option>Visa</option><option>Insurance</option><option>Vaccine Certificate</option></select><input id="documentNumber" placeholder="Document number"><input id="documentExpiry" type="date"><button class="auth-submit" type="submit">Add to wallet</button></form><div id="documentList" class="profile-list"></div></section>
+            <section id="historyPanel" hidden><p class="privacy-note">Only activity performed after login is saved to your account. The latest 50 activities are shown here.</p><div id="historyList" class="profile-list"></div></section>
+        </div>
+    </div>
+
+    <div class="auth-overlay" id="savedPlansOverlay">
+        <div class="auth-modal" style="max-width: 600px;">
+            <button class="auth-close" onclick="closeSavedPlans()">×</button>
+            <div class="auth-header">
+                <div class="auth-logo" style="background: #e7f7dc;">🔖</div>
+                <h2>Your Saved Trips</h2>
+                <p>View and manage your bookmarked travel plans</p>
+            </div>
+            <div id="savedPlansContainer" style="max-height: 400px; overflow-y: auto; padding-right: 5px;"></div>
+        </div>
+    </div>
+
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-modal">
+            <button class="auth-close" onclick="closeAuth()">×</button>
+            <div class="auth-header">
+                <div class="auth-logo">🌍</div>
+                <h2 id="authTitle">Welcome Back</h2>
+                <p id="authSubtitle">Login to continue your travel journey</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button id="loginTab" class="auth-tab active" onclick="showLogin()">Login</button>
+                <button id="signupTab" class="auth-tab" onclick="showSignup()">Sign Up</button>
+            </div>
+
+            <form id="loginForm" class="auth-form" onsubmit="loginUser(event)">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email" required>
+
+                <label>Password</label>
+                <div class="password-field">
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    <button type="button" onclick="togglePassword('loginPassword', this)">👁️</button>
+                </div>
+
+                <button type="button" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</button>
+                <button class="auth-submit" type="submit">Login</button>
+                <p id="loginMessage" class="auth-message"></p>
+
+                <p class="auth-switch">Don't have an account? <button type="button" onclick="showSignup()">Sign Up</button></p>
+            </form>
+
+            <form id="signupForm" class="auth-form" style="display:none;" onsubmit="signupUser(event)">
+                <label>Full Name</label>
+                <input type="text" id="signupName" placeholder="Enter your name" required>
+
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email" required>
+
+                <label>Password</label>
+                <div class="password-field">
+                    <input type="password" id="signupPassword" placeholder="Create a password" required>
+                    <button type="button" onclick="togglePassword('signupPassword', this)">👁️</button>
+                </div>
+
+                <label>Confirm Password</label>
+                <div class="password-field">
+                    <input type="password" id="signupConfirmPassword" placeholder="Confirm your password" required>
+                    <button type="button" onclick="togglePassword('signupConfirmPassword', this)">👁️</button>
+                </div>
+
+                <button class="auth-submit" type="submit">Create Account</button>
+                <div class="social-auth" aria-label="Additional sign-in options">
+                    <p class="social-auth-heading">More sign-in options</p>
+                    <button type="button" disabled title="Google sign-in is not configured yet">Continue with Google <small>Coming soon</small></button>
+                    <button type="button" disabled title="Apple sign-in is not configured yet">Continue with Apple <small>Coming soon</small></button>
+                    <button type="button" disabled title="Phone OTP sign-in is not configured yet">Use Phone OTP <small>Coming soon</small></button>
+                </div>
+                <p id="signupMessage" class="auth-message"></p>
+
+                <p class="auth-switch">Already have an account? <button type="button" onclick="showLogin()">Login</button></p>
+            </form>
+
+            <form id="forgotPasswordForm" class="auth-form" style="display:none;" onsubmit="resetPassword(event)">
+                <label>Email</label>
+                <input type="email" id="forgotEmail" placeholder="Enter your registered email" required>
+
+                <button class="auth-submit" type="submit">Send Reset Link</button>
+                <p id="forgotMessage" class="auth-message"></p>
+
+                <p class="auth-switch">Remember your password? <button type="button" onclick="showLogin()">Login</button></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="translate.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

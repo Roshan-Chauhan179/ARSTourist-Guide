@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Travel reviews | ARS</title><link rel="stylesheet" href="style.css"></head>
+<body class="live-page reviews-page">
+<main class="live-main reviews-main">
+  <header class="reviews-hero">
+    <a class="live-back reviews-back" href="index.HTML">← Back to home</a>
+    <div class="reviews-hero-copy"><span class="reviews-eyebrow">TRAVELLER COMMUNITY</span><h1>Share the moments that made your trip.</h1><p>Rate a destination, hotel, or package to help fellow travellers plan with confidence.</p></div><div class="reviews-hero-mark" aria-hidden="true">✦</div>
+  </header>
+  <section class="reviews-shell" aria-labelledby="review-form-title">
+    <aside class="reviews-intro"><span class="reviews-step">01</span><h2 id="review-form-title">Write a review</h2><p>Your practical, honest feedback makes every plan better.</p><ul><li>Rate your experience from 1 to 5 stars</li><li>Add one travel photo if you wish</li><li>Keep it helpful and respectful</li></ul><div class="reviews-photo-note"><span>▣</span><p><b>Photo upload</b>PNG, JPEG, or WebP files are supported. Larger photos may take longer to upload.</p></div></aside>
+    <form class="live-form reviews-form" id="reviewForm">
+      <div class="review-field"><label for="type">What are you reviewing?</label><select id="type"><option value="destination">Destination</option><option value="hotel">Hotel</option><option value="package">Package</option></select></div>
+      <div class="review-field"><label for="rating">Your rating</label><select id="rating"><option value="5">★★★★★ &nbsp; 5 stars</option><option value="4">★★★★☆ &nbsp; 4 stars</option><option value="3">★★★☆☆ &nbsp; 3 stars</option><option value="2">★★☆☆☆ &nbsp; 2 stars</option><option value="1">★☆☆☆☆ &nbsp; 1 star</option></select></div>
+      <div class="review-field review-wide"><label for="name">Name of place or package</label><input id="name" placeholder="e.g. Taj Lake Palace, Udaipur" required></div>
+      <div class="review-field review-wide"><label for="message">Tell travellers about it</label><textarea id="message" placeholder="What did you love? What should others know?" required></textarea></div>
+      <div class="review-field review-wide"><label for="photo">Add a photo <em>Optional</em></label><input id="photo" type="file" accept="image/png,image/jpeg,image/webp"></div>
+      <button class="generate-btn reviews-submit">Publish review <span>→</span></button><p id="status" class="reviews-status" role="status"></p>
+    </form>
+  </section>
+  <section class="reviews-feed" aria-labelledby="reviews-title"><div class="reviews-feed-heading"><div><span class="reviews-eyebrow">FROM THE COMMUNITY</span><h2 id="reviews-title">Recent reviews</h2></div><p>Real notes from real journeys</p></div><div class="live-results reviews-results" id="list" aria-live="polite"></div></section>
+</main><script src="reviews.js"></script><script src="reviews-unlimited.js"></script></body></html>

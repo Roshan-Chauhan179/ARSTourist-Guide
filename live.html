@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARS Tourist Guide – Live Explorer</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body class="live-page">
+<header class="live-nav"><a class="logo" href="index.HTML" aria-label="ARS Tourist Guide home"><span class="logo-mark">🌍</span>ARS<span>Tourist Guide</span></a><a class="live-back" href="index.HTML">← Back to home</a></header>
+  <main class="live-main">
+    <section class="live-hero"><div class="live-orb live-orb-one"></div><div class="live-orb live-orb-two"></div><div class="live-hero-content"><p id="liveEyebrow">LIVE EXPLORER</p><h1 id="liveTitle">Live travel information</h1><span id="liveSubtitle">Choose a destination to load current details.</span></div></section>
+    <section class="live-panel"><div class="live-form-copy"><span>STEP 1</span><h2>Plan your route</h2><p>For transport, add both cities and a date to search current flight, train, and bus routes.</p></div><div class="live-form"><div class="input-group transport-origin-group"><label>🛫 Starting city</label><input id="liveOrigin" placeholder="e.g. Delhi" autocomplete="off"></div><div class="input-group transport-date-group"><label>📅 Departure date</label><input id="liveDepartureDate" type="date"></div><div class="input-group"><label>📍 Destination</label><input id="liveDestination" placeholder="e.g. Kashmir" autocomplete="off"></div><button class="generate-btn" id="liveLoad">Load live information <span>→</span></button></div></section>
+    <section id="liveResults" class="live-results live-result-panel" aria-live="polite"><div class="live-empty"><div>✦</div><h3>Ready when you are</h3><p>Enter a destination above to see live results.</p></div></section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="translate.js"></script><script src="live.js"></script>
+</body>
+</html>

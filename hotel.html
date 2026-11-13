@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotels | ARS Tourist Guide</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="operations.css">
+</head>
+<body class="live-page hotel-page">
+<header class="live-nav"><a class="logo" href="index.HTML" aria-label="ARS Tourist Guide home"><span class="logo-mark">🌍</span>ARS<span>Tourist Guide</span></a><a class="live-back" href="index.HTML">← Back to home</a></header>
+  <main class="live-main">
+    <section class="live-hero hotel-hero"><div class="live-hero-content"><p>🏨 STAY FINDER</p><h1>Find your perfect stay</h1><span>Hotels with photos, map links and live local results.</span></div></section>
+    <section class="live-panel"><div class="live-form-copy"><span>STEP 1</span><h2>Where are you staying?</h2><p>Add travel dates to compare the current per-night rate and availability with a booking provider.</p></div><div class="live-form hotel-search-form"><div class="input-group"><label>📍 Destination</label><input id="hotelDestination" placeholder="e.g. Kashmir" autocomplete="off"></div><div class="input-group"><label>📅 Check-in</label><input id="hotelCheckIn" type="date"></div><div class="input-group"><label>📅 Check-out</label><input id="hotelCheckOut" type="date"></div><div class="input-group"><label>👥 Guests</label><input id="hotelGuests" type="number" min="1" value="2"></div><button class="generate-btn" id="hotelLoad">Show hotels <span>→</span></button></div></section>
+    <section id="hotelResults" class="live-results hotel-results" aria-live="polite"><div class="live-empty"><div>🏨</div><h3>Choose a destination</h3><p>We’ll show nearby named hotels and direct map links.</p></div></section>
+    <section id="hotelBookingPanel" class="booking-panel" hidden><button class="ops-close" type="button" onclick="closeHotelBooking()">×</button><h2 id="hotelBookingTitle">Reserve hotel</h2><p id="hotelBookingSummary" class="ops-muted"></p><form onsubmit="createHotelBooking(event)"><label>Mobile number for confirmation<input id="hotelBookingPhone" type="tel" placeholder="+919876543210" required></label><button class="ops-primary" type="submit">Send reservation request</button></form><p class="ops-muted">This is a reservation request on ARS Tourist Guide. We confirm availability and payment before marking the stay as confirmed.</p></section>
+  </main>
+  <script src="translate.js"></script><script src="hotel.js"></script>
+</body>
+</html>
